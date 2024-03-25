@@ -82,11 +82,11 @@ resources: {}
   #   memory: 128Mi
 
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
+  enabled: ${autoscaling.enabled}
+  minReplicas: ${autoscaling.minReplicas}
+  maxReplicas: ${autoscaling.maxReplicas}
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
 
 # -- Node labels for pod assignment
 nodeSelector: {}
@@ -103,11 +103,13 @@ env:
   - name: APP_ADDRESS
     value: ${ingress.host}
   - name: APP_NAME
-    value: Polr
+    value: MyPolr
   - name: SETTING_PUBLIC_INTERFACE
     value: "true"
   - name: SETTING_SHORTEN_PERMISSION
     value: "false"
+  - name: POLR_ALLOW_ACCT_CREATION
+    value: "true"
 
 admin:
   password: "" 
@@ -125,7 +127,7 @@ externalDatabase:
   password: "${externalDatabase.password}"
   ## @param externalDatabase.existingSecret Use existing secret for password details. The secret has to contain the key `mysql-password`
   ## NOTE: When it's set the externalDatabase.password is ignored.
-  existingSecret: ""
+  existingSecret: "${externalDatabase.existingSecret}"
 
 mail:
   enabled: false
@@ -139,13 +141,3 @@ mail:
   ## NOTE: When it's set the mail.password is ignored.
   existingSecret: ""
 
-mysql:
-  # if disabled please provide db-attributes via externalDatabase attributes
-  enabled: false
-  auth:
-    database: polr
-    password: polr
-    username: polr
-    ## @param mysql.auth.existingSecret Use existing secret for password details. The secret has to contain the keys `mysql-root-password`, `mysql-replication-password` and `mysql-password`
-    ## NOTE: When it's set the mysql.auth.rootPassword, mysql.auth.password, mysql.auth.replicationPassword are ignored.
-    existingSecret: ""

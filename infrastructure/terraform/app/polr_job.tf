@@ -10,7 +10,7 @@ resource "kubernetes_cron_job_v1" "polr_db_clean" {
   spec {
     concurrency_policy            = "Replace"
     failed_jobs_history_limit     = 5
-    schedule                      = "*/5 * * * *"
+    schedule                      = "0 */6 * * *"
     timezone                      = "Etc/UTC"
     starting_deadline_seconds     = 10
     successful_jobs_history_limit = 10

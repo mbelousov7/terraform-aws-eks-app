@@ -1,2 +1,2 @@
-FROM ajanvier/polr:2.3.0
+FROM ajanvier/polr:latest
 

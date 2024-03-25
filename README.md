@@ -107,6 +107,8 @@ bootstrap_eks_count -> 1
 ```
 in shell
 ``` shell
+make fmt
+make validate
 make apply-plan
 ```
 - init eks infra pod's and config's
@@ -118,6 +120,8 @@ monitoring_enabled -> 1
 ```
 in shell
 ``` shell
+make fmt
+make validate
 make apply-plan
 ```
 

@@ -7,7 +7,7 @@ locals {
   polr_dbport = jsondecode(data.aws_secretsmanager_secret_version.polr_db_secret_name.secret_string)["port"]
   polr_dbuser = jsondecode(data.aws_secretsmanager_secret_version.polr_db_secret_name.secret_string)["username"]
   polr_dbpass = jsondecode(data.aws_secretsmanager_secret_version.polr_db_secret_name.secret_string)["password"]
-  polr_dbname = "polr${var.tf_env}db"
+  polr_dbname = "polr${var.tf_env}"
 }
 
 resource "kubernetes_namespace" "polr" {
@@ -63,7 +63,7 @@ resource "kubernetes_job" "polr_db_create" {
         container {
           name    = "polr-job"
           image   = "mysql"
-          command = ["/bin/sh", "-c", "echo $(polr_dbhost); mysql -h $(polr_dbhost)  -u $(polr_dbuser) -p$(polr_dbpass) -se 'CREATE DATABASE ${local.polr_dbname};'"]
+          command = ["/bin/sh", "-c", "echo $(polr_dbhost); mysql -h $(polr_dbhost)  -u $(polr_dbuser) -p$(polr_dbpass) -se 'CREATE DATABASE IF NOT EXISTS ${local.polr_dbname};'"]
 
           env_from {
             secret_ref {
@@ -91,20 +91,12 @@ resource "helm_release" "polr" {
 
   provider = helm.eks
 
-  //repository = "https://christianhuth.github.io/helm-charts"
-  //chart      = "polr"
-
   chart = "./../../shared/helm-charts/polr"
 
   name = local.polr_chart_name
 
   namespace        = local.polr_namespce_name
   create_namespace = true
-
-  set {
-    name  = "mysql.enabled"
-    value = false
-  }
 
   values = [
     templatefile("${path.module}/helm/helm-chart-polr.yaml",
@@ -120,7 +112,7 @@ resource "helm_release" "polr" {
           className = ""
           host      = local.ingress_nginx_dns_name
           path      = "/"
-          pathType  = "Prefix" //"ImplementationSpecific" //"Prefix"
+          pathType  = "ImplementationSpecific"
         }
 
         externalDatabase = {
@@ -137,7 +129,13 @@ resource "helm_release" "polr" {
           existingSecret = local.polr_chart_name
         }
 
-        replicaCount = 4
+        replicaCount = 1
+
+        autoscaling = {
+          enabled     = true
+          minReplicas = 1
+          maxReplicas = 20
+        }
 
       }
   )]

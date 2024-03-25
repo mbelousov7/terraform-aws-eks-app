@@ -12,8 +12,8 @@ maintainers:
 sources:
   - https://github.com/cydrobolt/polr
   - https://github.com/ajanvier/docker-polr
-dependencies:
-  - name: mysql
+#dependencies:
+#  - name: mysql
 #    repository: https://charts.bitnami.com/bitnami
 #    version: 10.1.0
 annotations:
