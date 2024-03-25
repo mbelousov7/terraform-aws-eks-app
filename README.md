@@ -83,7 +83,7 @@ cd /repo/infrastructure/init_scripts/
 
 ```
 
-3. deploy aws vpc resources(time ~3m)
+3. deploy aws vpc resources(time ~5m)
 
 in shell:
 ``` shell
@@ -91,7 +91,7 @@ cd /repo/infrastructure/terraform/vpc/
 REGION=eu-west-1 make apply-plan
 ```
 
-4. deploy aws infra(eks, aurora rds) resources(time ~)
+4. deploy aws infra(eks, aurora rds) resources(time ~30m)
 
 - init rds and eks
 in shell:
@@ -129,7 +129,7 @@ k get pods -A
 kubectl get cm -n kube-system aws-auth -o yaml
 ```
 
-4. build docker for app
+4. build docker for app resources(time ~10m)
 
 ``` shell
 cd /repo/app_polr
