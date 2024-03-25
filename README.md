@@ -76,8 +76,11 @@ export $(cat /repo/infrastructure/.env | xargs)
 in shell:
 ``` shell
 cd /repo/infrastructure/init_scripts/
+
 ./terraform-s3-create-bucket-eu-west-1.sh
+
 ./terraform-dynamodb-create-table-eu-west-1.sh
+
 ```
 
 3. deploy aws vpc resources(time ~3m)
