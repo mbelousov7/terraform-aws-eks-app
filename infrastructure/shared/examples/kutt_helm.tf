@@ -38,7 +38,7 @@ resource "helm_release" "kutt" {
         }
 
         image = {
-          repository = "${local.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.kutt_chart_name}"
+          repository = "tokilabs/kutt"
           pullPolicy = "Always"
           tag        = "latest"
         }
@@ -49,7 +49,7 @@ resource "helm_release" "kutt" {
 
         mail = {
           from     = "test@test.com"
-          host     = "smtptesttest.com"
+          host     = ""
           password = "test"
           port     = "25"
           username = "test"
