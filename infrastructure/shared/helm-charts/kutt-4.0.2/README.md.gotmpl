@@ -1,0 +1,88 @@
+{{ template "chart.header" . }}
+{{ template "chart.description" . }}
+
+## TL;DR;
+
+```console
+helm repo add christianhuth https://christianhuth.github.io/helm-charts
+helm repo update
+helm install my-release christianhuth/kutt
+```
+
+## Introduction
+
+This chart bootstraps the free modern URL shortener called [Kutt](https://kutt.it) using the [Helm](https://helm.sh) package manager.
+
+## Prerequisites
+
+- Kubernetes 1.19+
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```console
+helm repo add christianhuth https://christianhuth.github.io/helm-charts
+helm repo update
+helm install my-release christianhuth/kutt
+```
+
+These commands deploy Kutt on the Kubernetes cluster in the default configuration. The [Values](#values) section lists the values that can be configured during installation.
+
+> **Tip**: List all releases using `helm list`
+
+## Uninstalling the Chart
+
+To uninstall the `my-release` deployment:
+
+```console
+helm uninstall my-release
+```
+
+The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+{{ template "chart.valuesSection" . }}
+
+Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
+
+Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
+
+```console
+helm install my-release -f values.yaml christianhuth/kutt
+```
+
+## Upgrading the Chart
+
+### 4.0.0
+
+This major updates the PostgreSQL subchart to its newest major, 14.0.0. [Here](https://github.com/bitnami/charts/tree/master/bitnami/postgresql#to-1400) you can find more information about the changes introduced in that version.
+
+### 3.0.0
+
+This major updates the redis subchart to its newest major, 18.0.4. [Here](https://github.com/bitnami/charts/tree/main/bitnami/redis#to-1800) you can find more information about the changes introduced in that version.
+
+### 2.0.0
+
+This major updates the way you define environment variables.
+  - The section `mail` has been moved to `kutt.mail`
+  - The section `envSecrets` has been merged into `kutt`:
+    - `envSecrets.google` is now `kutt.google`
+    - `envSecrets.jwt` is now `kutt.jwt`
+    - `envSecrets.recaptcha` is now `kutt.recaptcha`
+  - The section `env` has been replaced with specific values:
+    - `ADMIN_EMAILS` is now `kutt.admin.emails`
+    - `CUSTOM_DOMAIN_USE_HTTPS` is now `kutt.domain.customDomainUseHttps`
+    - `DEFAULT_DOMAIN` is now `kutt.domain.defaultDomain`
+    - `DEFAULT_MAX_STATS_PER_LINK` is now `kutt.config.defaultMaxStatsPerLink`
+    - `DISALLOW_ANONYMOUS_LINKS` is now `kutt.config.disallowAnonymousLinks`
+    - `DISALLOW_REGISTRATION` is now `kutt.config.disallowRegistration`
+    - `LINK_LENGTH` is now `kutt.config.linkLength`
+    - `NON_USER_COOLDOWN` is now `kutt.config.nonUserCooldown`
+    - `REPORT_EMAIL` is now `kutt.mail.reportEmail`
+    - `SITE_NAME` is now `kutt.config.siteName`
+    - `USER_LIMIT_PER_DAY` is now `kutt.config.userLimitPerDay`
+  - You can define additional environment variables using the extraEnv section.
+
+### 1.0.0
+
+This major updates the PostgreSQL subchart to its newest major, 12.0.0. [Here](https://github.com/bitnami/charts/tree/master/bitnami/postgresql#to-1200) you can find more information about the changes introduced in that version.

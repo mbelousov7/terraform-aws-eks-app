@@ -1,0 +1,29 @@
+output "vpc_id" {
+  value       = aws_vpc.default.id
+  description = "The ID of the VPC"
+}
+
+output "igw_id" {
+  value       = join("", aws_internet_gateway.default.*.id)
+  description = "The ID of the Internet Gateway"
+}
+
+output "vpc_main_route_table_id" {
+  value       = aws_vpc.default.main_route_table_id
+  description = "The ID of the main route table associated with this VPC"
+}
+
+output "vpc_default_security_group_id" {
+  value       = aws_vpc.default.default_security_group_id
+  description = "The ID of the security group created by default on VPC creation"
+}
+
+output "vpc_default_route_table_id" {
+  value       = aws_vpc.default.default_route_table_id
+  description = "The ID of the route table created by default on VPC creation"
+}
+
+output "vpc_cidr_block" {
+  value       = aws_vpc.default.cidr_block
+  description = "The CIDR block of the VPC"
+}
