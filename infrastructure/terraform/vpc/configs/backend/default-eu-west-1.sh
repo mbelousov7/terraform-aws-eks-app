@@ -1,0 +1,6 @@
+region="eu-west-1"
+tf_bucket="changeme-terraform-aws-eks-app-state-eu-west-1"
+tf_stack="vpc"
+tf_zone="default"
+tf_key="terraform/vpc/terraform-aws-eks-app-vpc-state-eu-west-1.tfstate"
+dynamodb_table="terraform-aws-eks-app-state-eu-west-1"

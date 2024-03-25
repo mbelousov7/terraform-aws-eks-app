@@ -1,0 +1,421 @@
+namespaceOverride: ""
+commonLabels: {}
+controller:
+  name: controller
+  enableAnnotationValidations: false
+  image:
+    chroot: false
+    registry: ${image.registry}
+    image: ${image.ingress_nginx_controller_image}
+    tag: ${image.ingress_nginx_controller_tag} 
+    digest: "" 
+    digestChroot: "" 
+    pullPolicy: IfNotPresent
+    runAsNonRoot: true
+    runAsUser: 101
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault
+    readOnlyRootFilesystem: false
+  existingPsp: ""
+  containerName: controller
+  containerPort:
+    http: 80
+    https: 443
+    tohttps: 2443
+  config: {}
+%{ for k, v in config ~}
+#    ${k}: "${v}"
+%{ endfor ~}
+#    server-snippet: |
+#      listen 2443;
+#      if ( $server_port = 80 ) {
+#         return 308 http://$host$request_uri;
+#      }
+  configAnnotations: {}
+  proxySetHeaders: {}
+  addHeaders: {}
+  dnsConfig: {}
+  hostAliases: []
+  hostname: {}
+  dnsPolicy: ClusterFirst
+  reportNodeInternalIp: false
+  watchIngressWithoutClass: false
+  ingressClassByName: false
+  enableTopologyAwareRouting: false
+  allowSnippetAnnotations: false
+  hostNetwork: false
+  hostPort:
+    enabled: false
+    ports:
+      http: 80
+      https: 443
+  networkPolicy:
+    enabled: false
+  electionID: ""
+  ingressClassResource:
+    name: ${ingress_nginx_class}
+    enabled: true
+    default: ${ingress_nginx_default}
+    controllerValue: "k8s.io/ingress-nginx"
+    parameters: {}
+  ingressClass: ${ingress_nginx_class}
+  podLabels: {}
+  podSecurityContext: {}
+  sysctls: {}
+  containerSecurityContext: {}
+  publishService:
+    enabled: true
+    pathOverride: ""
+  scope:
+    enabled: false
+    namespace: ""
+    namespaceSelector: ""
+  configMapNamespace: ""
+  tcp:
+    configMapNamespace: ""
+    annotations: {}
+  udp:
+    configMapNamespace: ""
+    annotations: {}
+  maxmindLicenseKey: ""
+  extraArgs: {}
+  extraEnvs: []
+  kind: Deployment
+  annotations: {}
+  labels: {}
+  updateStrategy: {}
+  minReadySeconds: 0
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  terminationGracePeriodSeconds: 300
+  nodeSelector:
+%{ for node in node_selector ~}
+    ${node}
+%{ endfor ~}
+  livenessProbe:
+    httpGet:
+      path: "/healthz"
+      port: 10254
+      scheme: HTTP
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 5
+  readinessProbe:
+    httpGet:
+      path: "/healthz"
+      port: 10254
+      scheme: HTTP
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  healthCheckPath: "/healthz"
+  healthCheckHost: ""
+  podAnnotations: {}
+  replicaCount: ${replica_count}
+  minAvailable: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 90Mi
+  autoscaling:
+    enabled: false
+    annotations: {}
+    minReplicas: 1
+    maxReplicas: 11
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+    behavior: {}
+  autoscalingTemplate: []
+  keda:
+    apiVersion: "keda.sh/v1alpha1"
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 11
+    pollingInterval: 30
+    cooldownPeriod: 300
+    restoreToOriginalReplicaCount: false
+    scaledObject:
+      annotations: {}
+    triggers: []
+    behavior: {}
+  enableMimalloc: true
+  customTemplate:
+    configMapName: ""
+    configMapKey: ""
+  service:
+    enabled: true
+    external:
+      enabled: true
+    annotations:
+%{ for annotation in service.annotations ~}
+      ${annotation}
+%{ endfor ~}    
+    labels: {}
+    type: LoadBalancer
+    clusterIP: ""
+    externalIPs: []
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    loadBalancerClass: ""
+    externalTrafficPolicy: "Local"
+    sessionAffinity: ""
+    ipFamilyPolicy: SingleStack
+    ipFamilies:
+      - IPv4
+    enableHttp: ${service.enableHttp}
+    enableHttps: ${service.enableHttps}
+    ports:
+      http: 80
+      https: 443
+    targetPorts:
+      http: http
+      https: tohttps
+    appProtocol: true
+    nodePorts:
+      http: ""
+      https: ""
+      tcp: {}
+      udp: {}
+    internal:
+      enabled: false
+      annotations: {}
+      type: ""
+      clusterIP: ""
+      externalIPs: []
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      loadBalancerClass: ""
+      externalTrafficPolicy: "Local"
+      sessionAffinity: ""
+      ipFamilyPolicy: SingleStack
+      ipFamilies:
+        - IPv4
+      ports: {}
+      targetPorts: {}
+      appProtocol: true
+      nodePorts:
+        http: ""
+        https: ""
+        tcp: {}
+        udp: {}
+  shareProcessNamespace: false
+  extraContainers: []
+  extraVolumeMounts: []
+  extraVolumes: []
+  extraInitContainers: []
+  extraModules: []
+  opentelemetry:
+    enabled: false
+    name: opentelemetry
+    image:
+      registry: registry.k8s.io
+      image: ingress-nginx/opentelemetry
+      tag: "v20230721-3e2062ee5"
+      distroless: true
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+    resources: {}
+  admissionWebhooks:
+    name: admission
+    annotations: {}
+    enabled: true
+    extraEnvs: []
+    failurePolicy: Fail
+    port: 8443
+    certificate: "/usr/local/certificates/cert"
+    key: "/usr/local/certificates/key"
+    namespaceSelector: {}
+    objectSelector: {}
+    labels: {}
+    existingPsp: ""
+    service:
+      annotations: {}
+      externalIPs: []
+      loadBalancerSourceRanges: []
+      servicePort: 443
+      type: ClusterIP
+    createSecretJob:
+      name: create
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        allowPrivilegeEscalation: false
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+      resources: {}
+    patchWebhookJob:
+      name: patch
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        allowPrivilegeEscalation: false
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+      resources: {}
+    patch:
+      enabled: true
+      image:
+        registry: ${image.registry}
+        image: ${image.ingress_nginx_kube_webhook_certgen_image}
+        tag: ${image.ingress_nginx_kube_webhook_certgen_tag}
+        digest: "" 
+        pullPolicy: IfNotPresent
+      priorityClassName: ""
+      podAnnotations: {}
+      networkPolicy:
+        enabled: false
+      nodeSelector:
+%{ for node in node_selector ~}
+        ${node}
+%{ endfor ~}
+      tolerations: []
+      labels: {}
+      securityContext: {}
+    certManager:
+      enabled: false
+      rootCert:
+        duration: ""
+      admissionCert:
+        duration: ""
+  metrics:
+    port: 10254
+    portName: metrics
+    enabled: false
+    service:
+      annotations: {}
+      labels: {}
+      externalIPs: []
+      loadBalancerSourceRanges: []
+      servicePort: 10254
+      type: ClusterIP
+    serviceMonitor:
+      enabled: false
+      additionalLabels: {}
+      annotations: {}
+      namespace: ""
+      namespaceSelector: {}
+      scrapeInterval: 30s
+      targetLabels: []
+      relabelings: []
+      metricRelabelings: []
+    prometheusRule:
+      enabled: false
+      additionalLabels: {}
+      rules: []
+  lifecycle:
+    preStop:
+      exec:
+        command:
+          - /wait-shutdown
+  priorityClassName: ""
+revisionHistoryLimit: 10
+defaultBackend:
+  enabled: ${default_backend_enabled}
+  name: defaultbackend
+  image:
+    registry: ${image.ingress_nginx_default_backend_registry}
+    image: ${image.ingress_nginx_default_backend_image}
+    tag: ${image.ingress_nginx_default_backend_tag}
+    pullPolicy: IfNotPresent
+    runAsNonRoot: true
+    runAsUser: 65534
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault
+    readOnlyRootFilesystem: true
+  existingPsp: ""
+  extraArgs: {}
+  serviceAccount:
+    create: true
+    name: ""
+    automountServiceAccountToken: true
+  extraEnvs:
+    - name: TEMPLATE_NAME
+      value: lost-in-space # one of: app-down, cats, connection, ghost, hacker-terminal, l7-dark, l7-light, lost-in-space, matrix, noise, shuffle
+    - name: SHOW_DETAILS # Optional: enables the output of additional information on error pages
+      value: "true"
+  port: 8080
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+  readinessProbe:
+    failureThreshold: 6
+    initialDelaySeconds: 0
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 5
+  updateStrategy: {}
+  minReadySeconds: 0
+  tolerations: []
+  affinity: {}
+  podSecurityContext: {}
+  containerSecurityContext: {}
+  podLabels: {}
+  nodeSelector:
+%{ for node in node_selector ~}
+    ${node}
+%{ endfor ~}
+  podAnnotations: {}
+  replicaCount: ${replica_count}
+  minAvailable: 1
+  resources: {}
+  extraVolumeMounts: []
+  extraVolumes: []
+  extraConfigMaps: []
+  autoscaling:
+    annotations: {}
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+  networkPolicy:
+    enabled: false
+  service:
+    annotations: {}
+    externalIPs: []
+    loadBalancerSourceRanges: []
+    servicePort: 80
+    type: ClusterIP
+  priorityClassName: ""
+  labels: {}
+rbac:
+  create: true
+  scope: false
+podSecurityPolicy:
+  enabled: false
+serviceAccount:
+  create: true
+  name: ""
+  automountServiceAccountToken: true
+  annotations: {}
+imagePullSecrets: []
+tcp: {}
+udp: {}
+portNamePrefix: ""
+dhParam: ""

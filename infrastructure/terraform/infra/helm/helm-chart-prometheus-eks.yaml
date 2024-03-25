@@ -1,0 +1,459 @@
+rbac:
+  create: true
+podSecurityPolicy:
+  enabled: false
+imagePullSecrets: []
+serviceAccounts:
+  server:
+    create: true
+    name: ${serviceAccounts.server.name}
+    annotations:
+%{ for annotation in serviceAccounts.server.annotations ~}
+      ${annotation}
+%{ endfor ~}
+commonMetaLabels: {}
+configmapReload:
+  reloadUrl: ""
+  env: []
+  prometheus:
+    enabled: true
+    name: configmap-reload
+    image:
+      repository: ${configmapReload.prometheus.image.repository}
+      tag: ${configmapReload.prometheus.image.tag}
+      digest: ""
+      pullPolicy: IfNotPresent
+    extraArgs: {}
+    extraVolumeDirs: []
+    extraVolumeMounts: []
+    extraConfigmapMounts: []
+    containerSecurityContext: {}
+    resources: {}
+server:
+  name: server
+  clusterRoleNameOverride: ""
+  releaseNamespace: false
+  sidecarContainers: {}
+  sidecarTemplateValues: {}
+  image:
+    repository: ${server.image.repository}
+    tag: ${server.image.tag}
+    digest: ""
+    pullPolicy: IfNotPresent
+  command: []
+  priorityClassName: ""
+  enableServiceLinks: true
+  prefixURL: ""
+  baseURL: ""
+  env: []
+  defaultFlagsOverride: []
+  extraFlags:
+    - web.enable-lifecycle
+  configPath: /etc/config/prometheus.yml
+  storagePath: ""
+  global:
+    scrape_interval: 1m
+    scrape_timeout: 10s
+    evaluation_interval: 1m
+    external_labels:
+      cluster: ${aws_eks_cluster_name}
+  remoteWrite: []
+  remoteRead: []
+  tsdb: {}
+  exemplars: {}
+  probeHeaders: []
+  extraArgs:
+%{ for arg in server.extraArgs ~}
+    ${arg}
+%{ endfor ~}
+  extraInitContainers: []
+  extraVolumeMounts: []
+  extraVolumes: []
+  extraHostPathMounts: []
+  extraConfigmapMounts: []
+  extraSecretMounts: []
+  configMapOverrideName: ""
+  extraConfigmapLabels: {}
+
+  
+  ingress:
+    enabled: ${server.ingress.enabled}
+    ingressClassName: ${server.ingress.ingressClassName}
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+      #nginx.ingress.kubernetes.io/proxy-redirect-from: http://
+      #nginx.ingress.kubernetes.io/proxy-redirect-to: https://
+    extraLabels: {}
+    hosts:
+%{ for host in server.ingress.hosts ~}
+      - ${host}
+%{ endfor ~}
+    path: ${server.ingress.path}
+    pathType: Prefix
+    extraPaths: []
+    tls: []
+  strategy:
+    type: Recreate
+  hostAliases: []
+  tolerations: []
+
+
+  nodeSelector:
+%{ for node in node_selector ~}
+    ${node}
+%{ endfor ~}
+  affinity: {}
+  topologySpreadConstraints: []
+  podDisruptionBudget:
+    enabled: false
+    maxUnavailable: 1
+  persistentVolume:
+    enabled: ${persistentVolume.enabled}
+    statefulSetNameOverride: ""
+    accessModes:
+      - ReadWriteOnce
+    labels: {}
+    annotations: {}
+    existingClaim: ""
+    mountPath: /data
+    size: ${persistentVolume.size}
+    subPath: ""
+  emptyDir:
+    sizeLimit: ""
+  podAnnotations: {}
+  podLabels:
+    metrics-client: "true"
+    prometheus-client: "true"
+  alertmanagers: []
+  podSecurityPolicy:
+    annotations: {}
+  replicaCount: 1
+  revisionHistoryLimit: 10
+  deploymentAnnotations: {}
+  statefulSet:
+    enabled: false
+    annotations: {}
+    labels: {}
+    podManagementPolicy: OrderedReady
+    headless:
+      annotations: {}
+      labels: {}
+      servicePort: 80
+      gRPC:
+        enabled: false
+        servicePort: 10901
+    pvcDeleteOnStsDelete: true
+    pvcDeleteOnStsScale: true
+  tcpSocketProbeEnabled: false
+  probeScheme: HTTP
+  readinessProbeInitialDelay: 30
+  readinessProbePeriodSeconds: 5
+  readinessProbeTimeout: 4
+  readinessProbeFailureThreshold: 3
+  readinessProbeSuccessThreshold: 1
+  livenessProbeInitialDelay: 30
+  livenessProbePeriodSeconds: 15
+  livenessProbeTimeout: 10
+  livenessProbeFailureThreshold: 3
+  livenessProbeSuccessThreshold: 1
+  startupProbe:
+    enabled: false
+    periodSeconds: 5
+    failureThreshold: 30
+    timeoutSeconds: 10
+  resources: {}
+  hostNetwork: false
+  dnsPolicy: ClusterFirst
+  portName: ""
+  verticalAutoscaler:
+    enabled: false
+  dnsConfig: {}
+  securityContext:
+    runAsUser: 65534
+    runAsNonRoot: true
+    runAsGroup: 65534
+    fsGroup: 65534
+  containerSecurityContext: {}
+  service:
+    enabled: true
+    annotations: {}
+    labels: {}
+    clusterIP: ""
+    externalIPs: []
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    servicePort: 80
+    sessionAffinity: None
+    type: ClusterIP
+    gRPC:
+      enabled: false
+      servicePort: 10901
+    statefulsetReplica:
+      enabled: false
+      replica: 0
+    additionalPorts: []
+  terminationGracePeriodSeconds: 300
+  retention: "15d"
+  retentionSize: ""
+ruleFiles: {}
+scrapeConfigFiles: []
+serverFiles:
+  alerting_rules.yml: {}
+  alerts: {}
+  recording_rules.yml: {}
+  rules: {}
+  prometheus.yml:
+    rule_files:
+      - /etc/config/recording_rules.yml
+      - /etc/config/alerting_rules.yml
+    ## Below two files are DEPRECATED will be removed from this default values file
+      - /etc/config/rules
+      - /etc/config/alerts
+
+    scrape_configs:
+    
+      - job_name: prometheus
+        static_configs:
+          - targets:
+            - localhost:9090
+
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: default;kubernetes;https
+
+      - job_name: 'kubernetes-nodes'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [__meta_kubernetes_node_name]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/$1/proxy/metrics
+
+      - job_name: 'kubernetes-service-endpoints'
+        honor_labels: true
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [${job_kubernetes_service_endpoints.source_labels_keep}]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape_slow]
+            action: drop
+            regex: true
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+            action: replace
+            target_label: __scheme__
+            regex: (https?)
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+            action: replace
+            target_label: __address__
+            regex: (.+?)(?::\d+)?;(\d+)
+            replacement: $1:$2
+          - action: labelmap
+            regex: __meta_kubernetes_service_annotation_prometheus_io_param_(.+)
+            replacement: __param_$1
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            action: replace
+            target_label: service
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            action: replace
+            target_label: node
+
+%{ for system, probe in probes ~}
+      - job_name: 'blackbox-exporter-http-${system}'
+        scrape_interval: 15s
+        scrape_timeout: 10s
+        honor_labels: true
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        relabel_configs:
+          - source_labels: [ "__address__" ]
+            target_label: "__param_target"
+          - source_labels: [ "__param_target" ]
+            target_label: "instance"
+          - target_label: "__address__"
+            replacement: "${probe.blackbox_exporter_address}"
+        static_configs:
+%{ for service, config in probe.probes_http_config ~}
+          - targets:
+%{ for target in config.targets ~}
+            - ${target}
+            labels:
+%{ for label, value in config.labels ~}
+              ${label}: ${value}
+%{ endfor ~}
+%{ endfor ~}
+%{ endfor ~}
+%{ endfor ~}
+
+
+      - job_name: 'kubernetes-services'
+        honor_labels: true
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        kubernetes_sd_configs:
+          - role: service
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
+            action: keep
+            regex: true
+          - source_labels: [__address__]
+            target_label: __param_target
+          - target_label: __address__
+            replacement: blackbox
+          - source_labels: [__param_target]
+            target_label: instance
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            target_label: service
+
+      - job_name: 'kubernetes-pods'
+        honor_labels: true
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [${job_kubernetes_pods.source_labels_keep}]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape_slow]
+            action: drop
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
+            action: replace
+            regex: (https?)
+            target_label: __scheme__
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+            action: replace
+            regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+            replacement: '[$2]:$1'
+            target_label: __address__
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+            action: replace
+            regex: (\d+);((([0-9]+?)(\.|$)){4})
+            replacement: $2:$1
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
+            replacement: __param_$1
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+          - source_labels: [__meta_kubernetes_pod_phase]
+            regex: Pending|Succeeded|Failed|Completed
+            action: drop
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            action: replace
+            target_label: node
+
+      - job_name: 'prometheus-pushgateway'
+        honor_labels: true
+        kubernetes_sd_configs:
+          - role: service
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
+            action: keep
+            regex: pushgateway
+            
+extraScrapeConfigs: ""
+alertRelabelConfigs: {}
+networkPolicy:
+  enabled: true
+forceNamespace: ""
+extraManifests: []
+alertmanager:
+  enabled: false
+  persistence:
+    size: 2Gi
+  podSecurityContext:
+    runAsUser: 65534
+    runAsNonRoot: true
+    runAsGroup: 65534
+    fsGroup: 65534
+
+## ToDo enable and add kube-state-metrics chart
+kube-state-metrics:
+  enabled: ${kube_state_metrics.enabled}
+  prometheusScrape: true
+#kube-state-metrics chart variables
+  image:
+    registry: ${kube_state_metrics.image.registry}
+    repository: ${kube_state_metrics.image.repository}
+    tag: "${kube_state_metrics.image.tag}"
+    pullPolicy: IfNotPresent
+# use default node selector
+  nodeSelector:
+%{ for node in node_selector ~}
+    ${node}
+%{ endfor ~} 
+prometheus-node-exporter:
+  enabled: ${prometheus_node_exporter.enabled}
+  rbac:
+    pspEnabled: false
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+#prometheus-node-exporter chart variables
+  image:
+    registry: ${prometheus_node_exporter.image.registry}
+    repository: ${prometheus_node_exporter.image.repository}
+    tag: "${prometheus_node_exporter.image.tag}"
+    pullPolicy: IfNotPresent
+# use default node selector
+  nodeSelector:
+    kubernetes.io/os: linux
+prometheus-pushgateway:
+  enabled: ${prometheus_pushgateway.enabled}
+  serviceAnnotations:
+    prometheus.io/probe: pushgateway
+#prometheus-pushgateway chart variables
+  image:
+    repository: ${prometheus_pushgateway.image.repository}
+    tag: "${prometheus_pushgateway.image.tag}"
+    pullPolicy: IfNotPresent
+# use default node selector
+  nodeSelector:
+%{ for node in node_selector ~}
+    ${node}
+%{ endfor ~}

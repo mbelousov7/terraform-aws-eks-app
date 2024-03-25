@@ -1,0 +1,2 @@
+FROM ajanvier/polr:latest
+
