@@ -44,12 +44,12 @@ resource "helm_release" "kutt" {
         }
 
         kutt = {
-          admin = "mbelousov7@gmail.com"
+          admin = "test@test.com"
         }
 
         mail = {
-          from     = "mbelousov7@gmail.com"
-          host     = "smtp.testtest.com"
+          from     = "test@test.com"
+          host     = "smtptesttest.com"
           password = "test"
           port     = "25"
           username = "test"

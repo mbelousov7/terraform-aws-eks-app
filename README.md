@@ -42,17 +42,22 @@ AWS_SECRET_ACCESS_KEY=******
 ```
 0. update s3 bucket names
 
-**changeme**-terraform-aws-eks-app-state-eu-west-1 -> **<your_account_name>**-terraform-aws-eks-app-state-eu-west-1
-
-in next files:
+AWS_ACCOUNT_NAME=changeme
 
 ```
 ./infrastructure/init_scripts/terraform-s3-create-bucket-eu-west-1.sh
+```
 
-./vpc/configs/backend/default-eu-west-1.sh
-
+**changeme**-terraform-aws-eks-app-state-eu-west-1 -> **<your_account_name>**-terraform-aws-eks-app-state-eu-west-1
+in next files:
 
 ```
+./infrastructure/terraform/app/configs/backend/dev-eu-west-1.sh
+./infrastructure/terraform/infra/configs/backend/default-eu-west-1.sh
+./infrastructure/terraform/vpc/configs/backend/default-eu-west-1.sh
+
+```
+
 
 1. buid docker shell
 
