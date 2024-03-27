@@ -3,16 +3,16 @@
 ################################################################################
 
 eks_cluster_create  = true
-cluster_is_deployed = true //define as false during first tf apply, after switch -> true and run apply second time
+cluster_is_deployed = false //define as false during first tf apply, after switch -> true and run apply second time
 
 karpenter_helm_count   = 1
 karpenter_iam_count    = 1
-karpenter_config_count = 1 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
+karpenter_config_count = 0 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
 
 ingress_nginx_helm_count = 1
-ingress_nginx_lb_count   = 1 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
+ingress_nginx_lb_count   = 0 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
 
-monitoring_enabled = 1 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
+monitoring_enabled = 0 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
 
 db_cluster_count = 1
 db_cluster_size  = 1
