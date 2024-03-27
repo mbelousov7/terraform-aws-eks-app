@@ -44,7 +44,6 @@ data "aws_subnet" "all_pub_subnet" {
 
 locals {
 
-
   priv_subnets     = [for s in data.aws_subnets.all_priv.ids : s]
   priv_cidr_blocks = [for subnet_id, subnet_data in data.aws_subnet.all_priv_subnet : subnet_data.cidr_block]
 
@@ -68,6 +67,7 @@ locals {
 
 }
 
+/* don't create aws_vpc_endpoint in demo env
 data "aws_vpc_endpoint" "vpc_endpoint" {
   for_each     = local.aws_vpc_endpoints
   service_name = each.value
@@ -95,4 +95,4 @@ resource "aws_security_group_rule" "sg_vpc_endpoint_cluster_nodes" {
   description              = "Allow access from ${var.tf_stack}-${var.tf_zone} EKS cluster nodes"
   source_security_group_id = module.eks.node_security_group_id
 }
-
+*/

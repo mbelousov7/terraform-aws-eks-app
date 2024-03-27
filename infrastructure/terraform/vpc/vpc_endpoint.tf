@@ -18,8 +18,8 @@ locals {
 
 }
 
-
-
+//don't create vpc endpoints in demo env
+/*
 resource "aws_security_group" "private" {
   for_each    = local.aws_vpc_endpoints
   name        = each.key
@@ -45,5 +45,4 @@ resource "aws_vpc_endpoint" "private" {
   }
 
 }
-
-
+*/
