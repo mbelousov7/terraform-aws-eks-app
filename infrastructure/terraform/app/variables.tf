@@ -19,9 +19,10 @@ variable "prefix" {
 # EKS Cluster & IAM roles & Kubernetes resources count managment
 ################################################################################
 
-variable "bootstrap_eks_count" {
-  description = "0 - for stack init(if cluster not created yet), 1 - if cluster already created"
-  default     = 1
+variable "cluster_is_deployed" {
+  description = "true - for stack init(if cluster not created yet), false - if cluster already created"
+  default     = true
+  type        = bool
 }
 
 ############################################### regions and vpc's variables ############################################################

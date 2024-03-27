@@ -1,7 +1,7 @@
 locals {
 
-  ingress_nginx_count      = var.bootstrap_eks_count == 1 && var.ingress_nginx_helm_count == 1 ? 1 : 0
-  ingress_nginx_lb_count   = var.bootstrap_eks_count == 1 && var.ingress_nginx_lb_count == 1 ? 1 : 0
+  ingress_nginx_count      = var.cluster_is_deployed && var.ingress_nginx_helm_count == 1 ? 1 : 0
+  ingress_nginx_lb_count   = var.cluster_is_deployed && var.ingress_nginx_lb_count == 1 ? 1 : 0
   ingress_nginx_chart_name = "ingress-nginx" //do not change
   ingress_nginx_namespace  = "ingress-nginx" //do not change
   ingress_nginx_class      = "nginx"         //do not change

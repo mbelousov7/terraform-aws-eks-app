@@ -14,9 +14,9 @@ locals {
 
   karpenter_iam_count = var.karpenter_iam_count
 
-  karpenter_config_count = var.bootstrap_eks_count == 1 && var.karpenter_config_count == 1 ? 1 : 0
-  karpenter_helm_count   = var.bootstrap_eks_count == 1 && var.karpenter_helm_count == 1 ? 1 : 0
-  karpenter_eks_count    = var.bootstrap_eks_count == 1 && var.karpenter_iam_count == 1 ? 1 : 0
+  karpenter_config_count = var.cluster_is_deployed && var.karpenter_config_count == 1 ? 1 : 0
+  karpenter_helm_count   = var.cluster_is_deployed && var.karpenter_helm_count == 1 ? 1 : 0
+  karpenter_eks_count    = var.cluster_is_deployed && var.karpenter_iam_count == 1 ? 1 : 0
 
   karpenter_chart_name = "karpenter"
   karpenter_namespace  = "karpenter"

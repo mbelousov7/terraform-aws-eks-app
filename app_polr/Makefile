@@ -18,6 +18,3 @@ push: build
 	$(eval IMAGE_NAME := "${AWS_ACCOUNT_ID}.dkr.ecr.${DEFAULT_REGION}.amazonaws.com/$(IMAGE):$(IMAGE_TAG)")
 	docker tag $(IMAGE) $(IMAGE_NAME)
 	docker push $(IMAGE_NAME)
-
-destroy:
-	aws ecr delete-repository --repository-name $(IMAGE) --force

@@ -3,7 +3,7 @@
 ################################################################################
 
 locals {
-  kubernetes_roles_count = var.bootstrap_eks_count == 1 ? 1 : 0
+  kubernetes_roles_count = var.cluster_is_deployed ? 1 : 0
 }
 
 data "aws_iam_role" "eks_aws_admins_iam_roles" {

@@ -21,13 +21,13 @@ after fix switch back to kube configs if eks not created yet
 */
 
 data "aws_eks_cluster" "eks" {
-  count = var.bootstrap_eks_count
+  count = var.cluster_is_deployed ? 1 : 0
   name  = local.eks_cluster_name //module.eks.cluster_name
   //depends_on = [module.eks]
 }
 
 data "aws_eks_cluster_auth" "eks" {
-  count = var.bootstrap_eks_count
+  count = var.cluster_is_deployed ? 1 : 0
   name  = local.eks_cluster_name //module.eks.cluster_name
   //depends_on = [module.eks]
 }

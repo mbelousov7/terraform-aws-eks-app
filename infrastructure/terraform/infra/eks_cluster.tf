@@ -1,8 +1,8 @@
 locals {
 
-  eks_create = var.eks_cluster_count == 1 ? true : false
+  eks_create = var.eks_cluster_create
 
-  eks_cluster_manage_aws_auth_configmap = var.bootstrap_eks_count == 1 ? true : false
+  eks_cluster_manage_aws_auth_configmap = var.cluster_is_deployed ? true : false
 
   eks_tags = merge(
     { "karpenter.sh/discovery" = local.eks_cluster_name },
@@ -44,8 +44,6 @@ locals {
 
 
 module "eks" {
-
-  //count = local.eks_cluster_count
 
   create = local.eks_create
 
