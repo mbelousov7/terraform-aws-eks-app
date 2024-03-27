@@ -572,7 +572,7 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
   //count = var.create && var.manage_aws_auth_configmap ? 1 : 0
   count = var.manage_aws_auth_configmap ? 1 : 0
   //bwconfig stop
-  
+
   force = true
 
   metadata {
