@@ -88,6 +88,8 @@ cd /repo/infrastructure/init_scripts/
 in shell:
 ``` shell
 cd /repo/infrastructure/terraform/vpc/
+make fmt
+make validate
 REGION=eu-west-1 make apply-plan
 ```
 
@@ -97,13 +99,14 @@ REGION=eu-west-1 make apply-plan
 in shell:
 ``` shell
 cd /repo/infrastructure/terraform/infra/
+make fmt
 make validate
 make apply-plan
 ```
 - init eks system's pod's
 udpdate vars in /repo/infrastructure/terraform/infra/configs/default-eu-west-1.tfvars
 ```
-bootstrap_eks_count -> 1
+cluster_is_deployed -> true
 ```
 in shell
 ``` shell
@@ -147,6 +150,7 @@ sudo chmod 666 /var/run/docker.sock
 in shell:
 ``` shell
 cd /repo/infrastructure/terraform/app/
+make fmt
 make validate
 make apply-plan
 ```
@@ -169,9 +173,6 @@ cd /repo/infrastructure/testing_scripts/
 in shell:
 ``` shell
 cd /repo/infrastructure/terraform/app/
-make destroy
-
-cd /repo/app_polr
 make destroy
 
 cd /repo/infrastructure/terraform/infra/

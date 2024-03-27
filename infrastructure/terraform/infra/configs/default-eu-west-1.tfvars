@@ -2,17 +2,17 @@
 # EKS Cluster & IAM roles & Kubernetes resources count managment
 ################################################################################
 
-eks_cluster_count   = 1
-bootstrap_eks_count = 0 //define as 0 during first tf apply, after switch -> 1 and run apply second time
+eks_cluster_create  = true
+cluster_is_deployed = true //define as false during first tf apply, after switch -> true and run apply second time
 
 karpenter_helm_count   = 1
 karpenter_iam_count    = 1
-karpenter_config_count = 0 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
+karpenter_config_count = 1 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
 
 ingress_nginx_helm_count = 1
-ingress_nginx_lb_count   = 0 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
+ingress_nginx_lb_count   = 1 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
 
-monitoring_enabled = 0 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
+monitoring_enabled = 1 //define as 0 during first and second tf apply, after switch -> 1 and run apply one more time
 
 db_cluster_count = 1
 db_cluster_size  = 1
@@ -34,7 +34,7 @@ eks_cluster_managed_node_groups_default = {
   desired_size   = 1
   min_size       = 1
   max_size       = 2
-  instance_types = ["t2.medium"]
+  instance_types = ["t2.small"]
   capacity_type  = "SPOT"
   //capacity_type  = "ON_DEMAND"
 

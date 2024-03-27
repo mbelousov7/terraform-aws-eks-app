@@ -6,7 +6,7 @@ locals {
   prometheus_eks_sa_name       = local.prometheus_eks_name
   prometheus_eks_iam_role_name = local.prometheus_eks_name
   prometheus_eks_namespace     = "monitoring"
-  prometheus_eks_chart_count   = var.bootstrap_eks_count == 1 && var.monitoring_enabled == 1 ? 1 : 0
+  prometheus_eks_chart_count   = var.cluster_is_deployed && var.monitoring_enabled == 1 ? 1 : 0
 
 }
 
